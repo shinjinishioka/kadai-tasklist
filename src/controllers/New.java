@@ -1,9 +1,7 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,19 +10,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import models.Task;
-import utils.DBUtil;
 
 /**
- * Servlet implementation class Index
+ * Servlet implementation class New
  */
-@WebServlet("/index")
-public class Index extends HttpServlet {
+@WebServlet("/new")
+public class New extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Index() {
+    public New() {
         super();
     }
 
@@ -33,14 +30,15 @@ public class Index extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EntityManager em = DBUtil.createEntityManager();
-        List<Task> tasks = em.createNamedQuery("getAllTasks", Task.class).getResultList();
+     // CSRF対策
+        request.setAttribute("_token", request.getSession().getId());
 
-        em.close();
+        request.setAttribute("task", new Task());
 
-        request.setAttribute("tasks", tasks);
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/index.jsp");
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/new.jsp");
         rd.forward(request, response);
+
+
     }
 
 }
